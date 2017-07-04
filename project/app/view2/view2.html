@@ -1,0 +1,133 @@
+<!-- Liste médecins -->
+<div class="marge" ng-show="show">
+    <h1>Médecins</h1>
+    <br/>
+    <label>Rechercher... </label>
+    <select ng-model="selectedCritere" ng-options="x for x in listeSelect"
+            ng-change="selectChange(selectedCritere)"></select>
+    <input type="text" ng-model="searchKeyword" ng-change="selectChange(selectedCritere)" data-toggle="tooltip"
+           title="Type keyword..."/>
+    <table class="table">
+        <tr class="tdhead">
+            <td>Nom complet</td>
+            <td>Titre</td>
+            <td>Mail</td>
+            <td width="50">Select</td>
+        </tr>
+        <tr class="trtable" ng-repeat="infos in infoMed | filter:recherche">
+            <td><a href="#/view2/{{infos.cetId}}">{{infos.prenom}} {{infos.nom}}</a></td>
+            <td>{{infos.titre}}</td>
+            <td><a href="mailto:{{infos.mail}}">{{infos.mail}}</a></td>
+            <td>
+                <center><input type="checkbox" ng-model="chkd" ng-true-value="1" ng-false-value="2"
+                               ng-change="medChecked(infos.cetId,chkd)"/></center>
+            </td>
+        </tr>
+    </table>
+    <button class="btn btn-default" ng-click="nvMed()">Ajouter</button>
+    {{bonjour}}
+    <button class="btn btn-default" ng-click="deleteMed()">Supprimer</button>
+    <!--    <canvas id="mycanvas" width="256" height="256"></canvas> -->
+
+</div>
+
+<div ng-repeat="medecin in testMed | filter:{cetId:quelMed}">
+    <div>{{medecin.nom}}</div>
+    <div>{{medecin.prenom}}</div>
+</div>
+
+ID: {{quelMed}}
+
+<div class="marge" ng-hide="show">
+    <h1>Nouveau médecin</h1>
+    <button ng-click="retourMed()"><span style="font-size: 25px; color: black;"
+                                         class="glyphicon glyphicon-triangle-left"></span></a></button>
+    <br/><br/>
+    <form ng-submit="addMed()">
+        <div class="form-group row">
+            <label for="inputnom" class="col-sm-2 form-control-label">Nom</label>
+            <div class="col-sm-3">
+                <input type="text" id="inputnom" class="form-control" ng-model="med.nom"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputprenom" class="col-sm-2 form-control-label">Prénom</label>
+            <div class="col-sm-3">
+                <input type="text" id="inputprenom" class="form-control" ng-model="med.prenom"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputtitre" class="col-sm-2 form-control-label">Titre (spécialisation)</label>
+            <div class="col-sm-3">
+                <input type="text" id="inputtitre" class="form-control" ng-model="med.titre"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputbd" class="col-sm-2 form-control-label">Date de naissance</label>
+            <div class="col-sm-3">
+                <input type="date" id="inputbd" class="form-control" ng-model="med.naissance"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputhf" class="col-sm-2 form-control-label">Sexe</label>
+            <div class="col-sm-3" id="inputhf">
+                Homme <input type="radio" name="radiohf" ng-model="med.radios" value="Homme"/>
+                Femme <input type="radio" name="radiohf" ng-model="med.radios" value="Femme"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputlieu" class="col-sm-2 form-control-label">Lieu de travail</label>
+            <div class="col-sm-3">
+                <textarea id="inputlieu" class="form-control" ng-model="med.lieu"></textarea>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputmail" class="col-sm-2 form-control-label">Adresse e-mail</label>
+            <div class="col-sm-3">
+                <input type="email" id="inputmail" class="form-control" ng-model="med.mail"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputnumero" class="col-sm-2 form-control-label">Numéro de téléphone professionnel</label>
+            <div class="col-sm-3">
+                <input type="tel" id="inputnumero" class="form-control" ng-model="med.numero"/>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="inputresp" class="col-sm-2 form-control-label">Responsable</label>
+            <div class="col-sm-3" id="inputresp">
+                Oui <input type="radio" ng-model="med.radioresp" name="responsable" value="Oui"
+                           ng-change="showResp(radioresp)"/>
+                Non <input type="radio" ng-model="med.radioresp" name="responsable" value="Non"
+                           ng-change="showResp(radioresp)"/>
+            </div>
+        </div>
+        <div ng-show="showme">
+            <div class="form-group row">
+                <label for="inputnresp" class="col-sm-2 form-control-label">Nom du responsable</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputnresp" class="form-control" ng-model="med.nomresp"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputpresp" class="col-sm-2 form-control-label">Prénom du responsable</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputpresp" class="form-control" ng-model="med.preresp"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputmresp" class="col-sm-2 form-control-label">Adresse e-mail du responsable</label>
+                <div class="col-sm-3">
+                    <input type="email" id="inputmresp" class="form-control" ng-model="med.mailresp"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-sm-2"></div>
+            <input class="btn btn-default" type="submit" value="Submit"/>
+        </div>
+    </form>
+    {{bonjour}}
+
+
+</div>

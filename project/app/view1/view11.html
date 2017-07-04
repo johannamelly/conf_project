@@ -1,0 +1,70 @@
+<div class="marge">
+    <h1>Titre</h1>
+    <div style="margin-left:250px; margin-right:250px;">Description...</div>
+    <br/><br/>
+    <table class="table" ng-repeat="conf in infoConf">
+        <tr>
+            <td class="tdhead col-md-3">Date de début</td>
+            <td class="trtable col-md-7">{{conf.debut}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">Date de fin</td>
+            <td class="trtable col-md-7">{{conf.fin}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">Informations horaire</td>
+            <td class="trtable col-md-7">{{conf.horaires}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">Ville</td>
+            <td class="trtable col-md-7">{{conf.ville}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">Pays</td>
+            <td class="trtable col-md-7">{{conf.pays}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">Organisateurs</td>
+            <td class="trtable col-md-7">{{conf.organisateurs}}</td>
+        </tr>
+        <tr>
+            <td class="tdhead col-md-3">
+                <button class="btn btn-default">Modifier</button>
+            </td>
+            <td class="trtable col-md-7"></td>
+        </tr>
+    </table>
+
+    <h2>Liste des invités</h2>
+    <table class="table" ng-repeat="conf in infoConf | filter:{cetId:quelleConf}">
+        <tr class="tdhead">
+            <td>Nom complet</td>
+            <td>Participation</td>
+            <td width="50px">Select</td>
+        </tr>
+        <tr class="tabletr" ng-repeat="meds in conf.invites">
+            <td>
+            monsieur {{meds}}
+            </td>
+            <td>Oui</td>
+            <td>
+                <center><input type="checkbox" ng-model="chkSel" ng-true-value="1" ng-false-value="0"
+                               ng-change="chkChkd(chkSel, meds)"></center>
+            </td>
+        </tr>
+        <tr class="tabletr">
+            <td>
+                <button class="btn btn-default">Ajouter</button>
+                <button class="btn btn-default" ng-click="deleteRow()">Supprimer</button>
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    <h3>Statistiques</h3>
+    <p style="color:lightgray" ng-click="showStati()"><i>{{stat}}</i></p>
+    <div ng-show="showStat">
+        <canvas id="mycanvas" width="256" height="256"></canvas>
+    </div>
+    {{quelleConf}}
+    {{test}}
+</div>

@@ -1,0 +1,206 @@
+<div>
+    <div class="marge" ng-show="idExiste">
+        <!--
+        NBREP{{nbRep}}<br/><br/>
+        Listemedconf:{{listeMedConf}} <br/>
+        NOMSMED:{{nomsMedecins}}<br/>
+
+        sdvmswdpk:{{tableau}}<br/>
+
+        BONJOUR:{{bonjour}}<br/>
+        TOUT:{{tousElements}}<br/>
+
+        LESMEDS:{{lesMeds}}<br/>
+        arrayids:{{arrayIds}}<br/>
+        pasmed: {{pasMed}}
+        <br/>
+        modificonf: {{modifiConf}}<br/>
+
+
+        mNomConf{{mNomConf}}<br/>
+        tabNbRep{{tabNbRep}}<br/>
+        tabRep{{tabRep}}<br/>
+
+        listemedninv:{{listeMednInv}}<br/>
+        newinvmed: {{newInvMed}}<br/>
+
+        -->
+        <h1 ng-show="showConf" ng-repeat="title in dbDetailConf">{{title.titre}} <span
+                style="font-size:15px;"
+                class="glyphicon glyphicon-pencil"
+                ng-click="modifTitre()"></span>
+        </h1>
+        <div ng-hide="showConf">
+            <h1 ng-repeat="title in dbDetailConf">
+                <input type="text" ng-value="title.titre" ng-model="ttr"/>
+                <center>
+                    <button class="btn btn-default btn-sm" ng-click="dbModifNomConf(ttr)">Valider</button>
+                    <button class="btn btn-default btn-sm" ng-click="annuleModTi()">Annuler</button>
+                </center>
+            </h1>
+
+        </div>
+        <div ng-show="showDescr" style="margin-left:250px; margin-right:250px;" ng-repeat="descr in dbDetailConf">
+            Descriptif: {{descr.descriptif}} <span
+                style="font-size:10px;"
+                class="glyphicon glyphicon-pencil"
+                ng-click="modifDescr()"></span>
+        </div>
+        <div ng-hide="showDescr">
+            <div style="margin-left:250px; margin-right:250px;" ng-repeat="descr in dbDetailConf">
+                <input type="text" ng-value="descr.descriptif" ng-model="dscr" class="form-control"/>
+                <button style="margin-top:15px;" class="btn btn-default btn-sm" ng-click="dbModifDescrConf(dscr)">
+                    Valider
+                </button>
+                <button style="margin-top:15px;" class="btn btn-default btn-sm" ng-click="annuleModDe()">Annuler
+                </button>
+            </div>
+
+        </div>
+        <a href="#/conferences"><span style="font-size: 25px; color: black;"
+                                      class="glyphicon glyphicon-triangle-left"></span></a>
+        <br/><br/>
+        <table class="table" ng-repeat="conf in dbDetailConf">
+            <tr>
+                <td class="tdhead col-md-3">Date de début</td>
+                <td class="trtable col-md-7" ng-show="bloque"><span ng-if="conf.debut!=null">{{conf.debut | date:'d MMMM yyyy'}}</span>
+                </td>
+                <td class="trtable col-md-7" ng-hide="bloque"><input type="date" ng-model="conf.debut"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Date de fin</td>
+                <td class="trtable col-md-7" ng-show="bloque"><span ng-if="conf.fin!=null">{{conf.fin | date:'d MMMM yyyy'}}</span>
+                </td>
+                <td class="trtable col-md-7" ng-hide="bloque"><input type="date" ng-model="conf.fin"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Informations horaire</td>
+                <td class="trtable col-md-7"><input class="form-control" type="text" ng-value="conf.horaire"
+                                                    ng-model="hor"
+                                                    ng-disabled="bloque"></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Ville</td>
+                <td class="trtable col-md-7"><input class="form-control" type="text" ng-value="conf.ville"
+                                                    ng-model="vil"
+                                                    ng-disabled="bloque"></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Pays</td>
+                <td class="trtable col-md-7"><input class="form-control" type="text" ng-value="conf.pays"
+                                                    ng-model="pays"
+                                                    ng-disabled="bloque"></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Organisateurs</td>
+                <td class="trtable col-md-7"><input class="form-control" type="text" ng-value="conf.organisateurs"
+                                                    ng-model="org"
+                                                    ng-disabled="bloque"></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">
+                    <button class="btn btn-default" ng-click="modifConf()">Modifier</button>
+                    <button class="btn btn-default" ng-click="dbDeleteConfDet(quelleConf)">Supprimer</button>
+                </td>
+                <td class="trtable col-md-7">
+                    <button ng-show="showValide" class="btn btn-default"
+                            ng-click="dbModifConf(conf.debut,conf.fin,hor,vil,pays,org)">Valider
+                    </button>
+                    <button ng-show="showValide" class="btn btn-default" ng-click="annuleConf()">Annuler</button>
+                </td>
+            </tr>
+        </table>
+        <div class="alert alert-info" ng-show="alertDet">{{msgDet}}</div>
+
+        <div ng-if="displayVille" map-lazy-load="https://maps.google.com/maps/api/js">
+            <ng-map center="{{latitude}},{{longitude}}" zoom="11">
+            </ng-map>
+        </div>
+
+        <div ng-if="displayPays" map-lazy-load="https://maps.google.com/maps/api/js">
+            <ng-map center="{{latitude}},{{longitude}}" zoom="7"></ng-map>
+        </div>
+
+        <h2 style="margin-top:70px;">Liste des invités</h2>
+        <table class="table">
+            <tr class="tdhead">
+                <td>Nom complet</td>
+                <td>Statut</td>
+                <td width="50px">Select</td>
+            </tr>
+            <tr class="tabletr" ng-repeat="meds in tousElements">
+                <td>
+                    <a href="#/medecins/{{meds.id}}">{{meds.prenom}} {{meds.nom}}</a>
+                </td>
+                <!--
+                <td><select class="form-control" ng-model="repSel" ng-options="x for x in reponsesConf"
+                            ng-disabled="disableRep" ng-selected="meds.statut"></select></td>
+                            -->
+                <td>{{meds.statut}}</td>
+                <td>
+                    <center><input type="checkbox" ng-model="chkSel" ng-true-value="1" ng-false-value="0"
+                                   ng-change="checkChkd(chkSel, meds)"></center>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-default" ng-click="showAdd()" ng-hide="ajouterMed">Ajouter</button>
+                    <button class="btn btn-default" ng-click="showAdd()" ng-show="ajouterMed">Annuler</button>
+                    <button class="btn btn-default" ng-click="dbDeleteInv()">Supprimer</button>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        <div ng-show="ajouterMed">
+            <h4>Médecins à inviter</h4>
+            <table class="table">
+                <tr class="tdhead">
+                    <td>Nom complet</td>
+                    <td>Statut</td>
+                    <td>Invité le</td>
+                    <td>A donné réponse le</td>
+                    <td>Ajouter</td>
+                </tr>
+                <tr class="tabletr" ng-repeat="x in pasMed">
+                    <td>
+                        {{x.prenom}} {{x.nom}}
+                    </td>
+                    <td>
+                        <select ng-model="selectedRep" class="form-control"
+                                ng-options="x for x in reponsesConf"></select>
+                    </td>
+                    <td><input type="date" ng-model="invite"></td>
+                    <td><input type="date" ng-model="repondu"></td>
+                    <td><input type="button" class="btn btn-default"
+                               ng-click="dbAddMedConf(x.id, selectedRep, invite, repondu)" value="Ajouter"/></td>
+                </tr>
+            </table>
+        </div>
+
+
+        <!--{{medsDelete}}-->
+        <h3>Statistiques</h3>
+        <br/>
+        <p style="color:darkgray"><i>Nombre de réponses des invités:</i></p>
+        <br/><br/>
+        <p ng-hide="showPieText">Aucun médecin n'a répondu à une invitation pour cette conférence pour le moment.</p>
+        <canvas id="mycanvas" width="256" height="256"></canvas>
+        <div ng-if="showPieText">
+            <p>Pourcentage de réponses</p>
+            <p>Oui: {{pcoui}}%</p>
+            <p>Non: {{pcnon}}%</p>
+            <p>Inconnu: {{pcnsp}}%</p>
+        </div>
+
+        <!--
+                <span style="color:gray" ng-click="showStati()"><i>{{stat}}</i></span>
+                -->
+        {{test}} {{test2}}
+    </div>
+</div>
+<div ng-hide="idExiste">
+    <div class="marge">
+        <h3>Désolé</h3>
+        <p>Aucune conférence ne correspond à cet ID.</p>
+    </div>
+</div>

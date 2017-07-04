@@ -1,0 +1,173 @@
+<h1>Notifications</h1>
+
+<!--med sans rep
+<div ng-repeat="a in tab">{{a}}</div>
+detconf:{{detConf}}vardata:{{varData}}
+ notifMed:{{notifMed}}
+tableau:{{bjr}}
+notifQuelMed:{{notifQuelMed}}
+notifMedecin:{{notifMedecin}} -->
+<div class="marge">
+    <h3>Nouvelles notifications</h3>
+
+    <table class="table" style="margin-top: 40px;">
+        <tr class="tdhead">
+            <td>Date</td>
+            <td>Notification</td>
+            <td><center>Select</center></td>
+            <!--  <td width="50">Select</td>-->
+        </tr>
+        <!--
+        <tr class="trtable" ng-repeat="infos in listeNotif">
+            <td>{{infos.date | date:'dd.MM.yyyy'}}</td>
+            <td>{{infos.notification}}</td>
+            <td><a href="#/conferences/{{infos.voir}}">Conférence n°{{infos.voir}}</a></td>
+
+            <td>
+                <center><input type="checkbox" ng-model="notifChecked" ng-change="checkNotif(notifChecked,infos.cetId)"
+                               ng-true-value="1" ng-false-value="0"/></center>
+            </td>
+        </tr>
+        -->
+
+        <tr ng-repeat="not in nvlNotifMed" class="trtable"
+            ng-if="not.nomNotif=='conf' && not.statut=='1' && not.conference!=''">
+            <td>{{not.date | date:'dd.MM.yyyy'}}</td>
+            <td>La conférence "{{not.conference}}" aura lieu dans 30 jours.</td>
+            <td>
+                <center><input type="checkbox" ng-model="notifChecked" ng-change="checkNotif(notifChecked,not.id)"
+                               ng-true-value="1" ng-false-value="0"/></center>
+            </td>
+        </tr>
+
+        <tr ng-repeat="notif in nvlNotifMed" class="trtable"
+            ng-if="notif.nom!='' && notif.prenom!='' && notif.statut=='1' && notif.nomNotif=='med'">
+            <td>{{notif.date| date:'dd.MM.yyyy'}}</td>
+            <td>
+                {{notif.prenom}} {{notif.nom}} n'a plus que trois jours pour répondre à l'invitation à la conférence
+                "{{notif.conference}}".
+            </td>
+            <td>
+                <center><input type="checkbox" ng-model="notifChecked" ng-change="checkNotif(notifChecked,notif.id)"
+                               ng-true-value="1" ng-false-value="0"/></center>
+            </td>
+        </tr>
+
+        <tr ng-repeat="noti in nvlNotifMed" class="trtable"
+            ng-if="noti.nom!='' && noti.prenom!='' && noti.statut=='1' && noti.nomNotif=='medPasse'">
+            <td>{{noti.date| date:'dd.MM.yyyy'}}</td>
+            <td>
+                {{noti.prenom}} {{noti.nom}} n'a pas répondu à l'invitation à la conférence
+                "{{noti.conference}}" qui a lieu aujourd'hui.
+            </td>
+            <td>
+                <center><input type="checkbox" ng-model="notifChecked" ng-change="checkNotif(notifChecked,noti.id)"
+                               ng-true-value="1" ng-false-value="0"/></center>
+            </td>
+        </tr>
+        <!--
+                <tr ng-repeat="y in notifMedecin" class="trtable">
+                    <td>{{today | date:'dd.MM.yyyy'}}</td>
+                    <td>{{y.prenom}} {{y.nom}} n'a plus que trois jours pour répondre à l'invitation de la conférence "{{y.titre}}"</td>
+                    <td><a href="#/medecins/{{y.idMed}}">Voir</a></td>
+                   <td>
+                        <center><input type="checkbox"/></center>
+                    </td>
+                </tr>
+
+                -->
+
+        <tr class="trtable">
+            <td></td>
+            <td></td>
+            <td>
+                <center>
+                    <button ng-click="changeTab()"
+                            class="btn btn-default btn-sm glyphicon glyphicon-ok"></button>
+                </center>
+            </td>
+        </tr>
+
+
+    </table>
+
+    <br>
+    <p style="color: darkgray;" ng-click="notifClick()"><i>{{showHide}} les anciennes notifications</i></p>
+
+    <div ng-show="showNotif">
+    <h3>Notifications passées</h3>
+    <table class="table">
+        <tr class="tdhead">
+            <td>Date</td>
+            <td>Notification</td>
+            <td><center>Select</center></td>
+        </tr>
+        <tr class="trtable" ng-repeat="notifi in nvlNotifMed"
+            ng-if="notifi.statut=='0' && notifi.nomNotif=='conf' && notifi.conference!=''">
+            <td>{{notifi.date | date: 'dd.MM.yyyy'}}</td>
+            <td>La conférence "{{notifi.conference}}" aura lieu dans 30 jours.</td>
+            <td>
+                <center><input type="checkbox" ng-model="passeeChecked" ng-true-value="1" ng-false-value="0"
+                               ng-change="checkPassee(passeeChecked, notifi.id)" ng-disabled="notifi.date.getTime()==fDate.getTime()"/></center>
+            </td>
+
+        </tr>
+
+        <tr class="trtable" ng-repeat="noti in nvlNotifMed"
+            ng-if="noti.statut=='0' && noti.nomNotif=='med' && noti.prenom!='' && noti.nom!=''">
+            <td>{{noti.date | date: 'dd.MM.yyyy'}}</td>
+            <td>{{noti.prenom}} {{noti.nom}} n'a plus que trois jours pour répondre à l'invitation à la conférence
+                "{{noti.conference}}".
+            </td>
+            <td>
+                <center><input type="checkbox" ng-model="passeeChecked" ng-true-value="1" ng-false-value="0"
+                               ng-change="checkPassee(passeeChecked, noti.id)" ng-disabled="noti.date.getTime()==fDate.getTime()"/></center>
+            </td>
+
+        </tr>
+
+
+        <tr class="trtable" ng-repeat="noti in nvlNotifMed"
+            ng-if="noti.statut=='0' && noti.nomNotif=='medPasse' && noti.prenom!='' && noti.nom!=''">
+            <td>{{noti.date | date: 'dd.MM.yyyy'}}</td>
+            <td>{{noti.prenom}} {{noti.nom}} n'a pas répondu à l'invitation à la conférence
+                "{{noti.conference}}" qui a lieu aujourd'hui.
+            </td>
+            <td>
+                <center><input type="checkbox" ng-model="passeeChecked" ng-true-value="1" ng-false-value="0"
+                               ng-change="checkPassee(passeeChecked, noti.id)" ng-disabled="noti.date.getTime()==fDate.getTime()"/></center>
+            </td>
+
+        </tr>
+        <tr class="trtable">
+            <td></td>
+            <td></td>
+            <td><center>
+                <button class="btn btn-default btn-sm" ng-click="supprNotif()">Supprimer</button>
+                </center>
+            </td>
+        </tr>
+    </table>
+    <p style="color:darkgray;"><i>Vous ne pouvez pas supprimer les notifications d'aujourd'hui.</i></p>
+
+
+</div>
+    {{test}}{{test2}}
+    <!--
+        <form ng-submit="addDate()">
+            <label for="idtest">Date: </label><input id="idtest" type="date" ng-model="form.deb"/>
+            <input type="text" ng-model="form.deb | date: 'dd.MM.yyyy'">
+            <input type="submit" value="Submit"/>
+        </form>
+        {{msg}}
+
+        {{test1}}
+        {{test2}}
+        {{jours}}
+        {{test3}}
+
+
+    notifChange: {{notifChange}}
+    notifMedecinP: {{notifMedecinP}}
+    -->
+</div>

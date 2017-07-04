@@ -1,0 +1,227 @@
+<!-- Liste conférences -->
+<div class="marge" ng-show="show">
+    <h1> Conférences </h1>
+    <a style="float:right; margin-bottom: 15px;" class="btn btn-default glyphicon glyphicon-bell" href
+       ng-click="showAModal()"></a>
+
+
+    <script type="text/ng-template" id="yesno.html">
+        <div class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" ng-click="close('Cancel')" data-dismiss="modal"
+                                aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" style="font-weight:bold;">Vos nouvelles notifications <span class="badge">{{combienDeNotif}}</span></h4>
+                    </div>
+                    <div class="modal-body" ng-repeat="not in listeN" ng-if="not.nomNotif=='conf'">
+                        <span style="font-weight:bold;">{{not.date | date: 'dd.MM.yyyy'}}</span> <span>La conférence "{{not.conference}}" aura lieu dans 30 jours.</span>
+                    </div>
+                    <div class="modal-body" ng-repeat="not in listeN" ng-if="not.nomNotif=='med'">
+                        <span style="font-weight:bold;">{{not.date | date: 'dd.MM.yyyy'}}</span>
+                        <span>Le médecin {{not.prenom}} {{not.nom}} n'a plus que 3 jours pour répondre à l'invitation à la conférence "{{not.conference}}".</span>
+                    </div>
+                    <div class="modal-body" ng-repeat="not in listeN" ng-if="not.nomNotif=='medPasse'">
+                        <span style="font-weight:bold;">{{not.date | date: 'dd.MM.yyyy'}}</span>
+                        <span>Le médecin {{not.prenom}} {{not.nom}} n'a pas répondu à l'invitation à la conférence "{{not.conference}}" qui a lieu aujourd'hui.</span>
+                    </div>
+                    <a class="modal-body" ng-href="#/notifications">Voir les notifications</a>
+                    <div class="modal-footer">
+                        <button type="button" ng-click="close('Yes')" class="btn btn-default" data-dismiss="modal">OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+
+    <div>
+        <form style="margin-top: 40px;">
+            <label for="inputcritere">Rechercher...</label>
+            <select ng-model="selectedCritere" id="inputcritere" ng-change="selectChange(selectedCritere)"
+                    ng-options="x for x in critRech"></select>
+            <input type="text" ng-model="searchKeyword" ng-change="selectChange(selectedCritere)"/>
+        </form>
+    </div>
+    <table class="table">
+        <tr class="tdhead">
+            <td>Nom</td>
+            <td width="350">Date</td>
+            <td>Lieu</td>
+            <td width="50">Select</td>
+        </tr>
+
+        <tr ng-repeat="infos in dbListeConf | filter: recherche" class="trtable">
+            <td><a href="#/conferences/{{infos.id}}">{{infos.titre}}</a></td>
+            <td><span ng-if="infos.debut!=null"><span ng-if="infos.fin!=null">Du </span><span
+                    ng-if="infos.fin==null">Le </span>{{infos.debut | date:'dd.MM.yyyy'}}</span><span
+                    ng-if="infos.fin!=null"><span ng-if="infos.debut!=null"> au </span>
+                <span ng-if="infos.debut==null"> Le </span>{{infos.fin | date:'dd.MM.yyyy'}}</span>
+            </td>
+            <td>{{infos.ville}}<span ng-if="infos.ville!='' && infos.pays!=''">, </span>{{infos.pays}}</td>
+            <td>
+                <center><input type="checkbox" ng-model="removeLine.selected" ng-true-value="1" ng-false-value="0"
+                               ng-change="checkedBox(infos.id, removeLine.selected, infos.titre)"/></center>
+            </td>
+        </tr>
+    </table>
+    <div class="alert alert-info" role="alert" ng-show="alertSuppr">{{msgSuppr}}
+        <ul>
+            <li ng-repeat="x in listeAlerte">{{x.titre}}</li>
+        </ul>
+    </div>
+    <div class="alert alert-info" role="alert" ng-show="alertAdd">{{ajoutConf}}</div>
+    <button class="btn btn-primary" ng-click="nvlConf()">Ajouter</button>
+    <!-- {{bonjour}} {{test}} {{rech}} {{searchKeyword}} {{recherche}} -->
+
+    <button class="btn btn-default" ng-click="dbDeleteConf()">Supprimer</button>
+    <br/>
+    <h3>Statistiques</h3>
+    <br>
+    <p style="color:darkgray;"><i>Nombre de conférences par pays:</i></p>
+
+    <br/>
+    <canvas id="barChart" width="500" height="500"></canvas>
+    <br/><br/>
+    <p style="color:darkgray"><i>Nombre de conférences total par année:</i></p>
+    <br/>
+    <canvas id="newBarChart" width="500" height="500"></canvas>
+
+
+</div>
+<!--
+{{test1}}
+{{test2}}
+-->
+<div class="marge" ng-hide="show">
+    <div class="marge">
+        <!--
+        BONJOUR: {{bonjour}}
+        VARTEST: {{varTest}}
+        LISTEMEDINV: {{listeMedInv}}
+        -->
+        <h1>Nouvelle conférence</h1>
+        <a href="#/conferences"><span ng-click="retourConf()" style="font-size: 25px; color: black;"
+                                           class="glyphicon glyphicon-triangle-left"></span></a>
+
+        <br/><br/>
+        <form ng-submit="dbAddConf()" name="confForm">
+            <div class="form-group row">
+                <label for="inputtitre" class="col-sm-2 form-control-label">Titre</label>
+                <div class="col-sm-5">
+                    <input type="text" id="inputtitre" class="form-control" ng-model="conf.titre" required/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputdescr" class="col-sm-2 form-control-label">Descriptif</label>
+                <div class="col-sm-5">
+                    <textarea id="inputdescr" class="form-control" ng-model="conf.description"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputdated" class="col-sm-2 form-control-label">Date de debut</label>
+                <div class="col-sm-5">
+                    <input type="date" id="inputdated" class="form-control" ng-model="conf.debut"/>
+                </div>
+            </div>
+            <!-- ajouter contrôle de la date si c'est dans le future -->
+            <div class="form-group row">
+                <label for="inputdatef" class="col-sm-2 form-control-label">Date de fin</label>
+                <div class="col-sm-5">
+                    <input type="date" id="inputdatef" class="form-control" ng-model="conf.fin"/>
+                </div>
+            </div>
+            <!-- ajouter contrôle de la date si c'est après celle de début -->
+            <div class="form-group row">
+                <label for="inputhor" class="col-sm-2 form-control-label">Informations horaires</label>
+                <div class="col-sm-5">
+                    <textarea id="inputhor" class="form-control" ng-model="conf.horaires"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputville" class="col-sm-2 form-control-label">Ville</label>
+                <div class="col-sm-5">
+                    <input type="text" id="inputville" class="form-control" ng-model="conf.ville"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputpays" class="col-sm-2 form-control-label">Pays</label>
+                <div class="col-sm-5">
+                    <input type="text" id="inputpays" class="form-control" ng-model="conf.pays"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputorg" class="col-sm-2 form-control-label">Organisateurs</label>
+                <div class="col-sm-5">
+                    <input type="text" id="inputorg" class="form-control" ng-model="conf.organisateurs"/>
+                </div>
+            </div>
+
+            <div class="alert alert-info" ng-show="showErrAlert">{{errAddAlert}}</div>
+            <div>
+                <label style="margin-top: 40px;">Liste des médecins invités:</label>
+            <span ng-repeat="meds1 in listeMedInv |filter: {statutInv:'Inconnu'}" ng-click="spliceMed(meds1.idMed)">
+                {{meds1.prenomMed}} {{meds1.nomMed}},
+            </span>
+            </div>
+            <div>
+                <label>Liste des médecins participants:</label>
+            <span ng-repeat="meds2 in listeMedInv |filter: {statutInv:'Oui'}" ng-click="spliceMed(meds2.idMed)">
+                {{meds2.prenomMed}} {{meds2.nomMed}},
+            </span>
+            </div>
+            <div>
+                <label>Liste des médecins ayant décliné l'invitation:</label>
+            <span ng-repeat="meds3 in listeMedInv |filter: {statutInv:'Non'}" ng-click="spliceMed(meds3.idMed)">
+                {{meds3.prenomMed}} {{meds3.nomMed}},
+            </span>
+            </div>
+            <div>{{msg}}</div>
+            <br/>
+            <span style="color:gray" ng-click="showMedVar()"><i>Voir/cacher médecins</i></span>
+            <div ng-show="showMed">
+                <div style="margin-top: 40px;">
+                    <label>Rechercher... </label>
+                    <select ng-model="selectedCritere" ng-options="x for x in critSelect"
+                            ng-change="selectChange(selectedCritere)"></select>
+                    <input type="text" ng-model="searchKeyword" ng-change="selectChange(selectedCritere)"/>
+                </div>
+                <br/>
+                <div>
+                    <br/><br/>
+                    <table class="table">
+                        <tr class="tdhead">
+                            <td>Prenom</td>
+                            <td>Nom</td>
+                            <td>Statut</td>
+                            <td>Invitation</td>
+                            <td>Réponse</td>
+                            <td></td>
+                        </tr>
+                        <tr ng-repeat="x in dbListeMed | filter:recherche">
+                            <td>{{x.prenom}}</td>
+                            <td>{{x.nom}}</td>
+                            <td><select ng-model="selectRep" class="form-control"
+                                        ng-options="x for x in reponsesConf"></select></td>
+
+                            <td><input type="date" ng-model="invite"/></td>
+
+                            <td><input type="date" ng-model=" repondu"></td>
+
+                            <td><input type="button" value="Ajouter"
+                                       ng-click="newAddMed(x.id, x.nom, x.prenom, selectRep, invite, repondu)"
+                                       class="btn btn-default"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div style="float:right;">
+                    <input type="submit" value="Submit" class="btn btn-primary"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

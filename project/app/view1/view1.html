@@ -1,0 +1,155 @@
+<!-- Liste conférences -->
+{{bjr}}
+<div class="marge" ng-show="show">
+    <h1> Conférences </h1>
+    <br/>
+    <!-- <button ng-click="changeView()">Ajouter</button> -->
+    <div>
+        <form>
+            <label for="inputcritere">Rechercher...</label>
+            <select ng-model="selectedCritere" id="inputcritere" ng-change="selectChange(selectedCritere)"
+                    ng-options="x for x in critRech"></select>
+            <input type="text" ng-model="searchKeyword" ng-change="selectChange(selectedCritere)"/>
+        </form>
+    </div>
+    <table class="table">
+        <tr class="tdhead">
+            <td>Nom</td>
+            <td width="350">Date</td>
+            <td>Lieu</td>
+            <td width="50">
+                <center><input type="checkbox" ng-click="selectAll()" ng-model="selectedAll"/></center>
+            </td>
+        </tr>
+        <tr ng-repeat="infos in infoConf | filter: recherche" class="trtable">
+            <td><a href="#/view1/{{infos.cetId}}">{{infos.titre}}</a></td>
+            <td>Du {{infos.debut | date:"dd.MM.yyyy"}} au {{infos.fin | date:"dd.MM.yyyy"}}</td>
+            <td>{{infos.ville}}, {{infos.pays}}</td>
+            <td>
+                <center><input type="checkbox" ng-model="removeLine.selected" ng-true-value="1" ng-false-value="0"
+                               ng-change="checkedBox(infos.cetId, removeLine.selected)"/></center>
+            </td>
+        </tr>
+    </table>
+
+
+
+    <table class="tbl" ng-show="tblshow">
+        <tr>
+            <th>Nom</th>
+        </tr>
+        <tr ng-repeat="x in dbValue">
+            <td><span ng-bind="x.nom"></span></td>
+        </tr>
+    </table>
+    <input type="button" ng-click="changeValues()" value="Get from DB" ng-show="!tblshow"/>
+    value: {{dbValue}}
+
+
+
+    <br/>
+    <button class="btn btn-default" ng-click="nvlConf()">Ajouter</button>
+    {{bonjour}} {{test}} {{rech}} {{searchKeyword}} {{recherche}}
+
+    <button class="btn btn-default" ng-click="deleteLigne()">Supprimer</button>
+    <h3>Statistiques</h3>
+    <p style="color:lightgray" ng-click="showStati()"><i>{{stat}}</i></p>
+    <div ng-show="showStat">
+        <!--
+            <canvas id="mycanvas" width="256" height="256"></canvas>
+            <canvas id="autrecanvas" width="256" height="256"></canvas>-->
+        <center>
+            <canvas id="piecanvas" width="256" height="256"></canvas>
+        </center>
+    </div>
+</div>
+{{test1}}
+{{test2}}
+<div class="marge" ng-hide="show">
+    <div class="marge">
+        <h1>Nouvelle conférence</h1>
+        <button class="btn btn-default" ng-click="retourConf()"><span style="font-size: 25px; color: black;"
+                                                                      class="glyphicon glyphicon-triangle-left"></span>
+        </button>
+        <br/><br/>
+        <form ng-submit="addConf()" name="confForm">
+            <div class="form-group row">
+                <label for="inputtitre" class="col-sm-2 form-control-label">Titre</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputtitre" class="form-control" ng-model="conf.titre" required/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputdescr" class="col-sm-2 form-control-label">Descriptif</label>
+                <div class="col-sm-3">
+                    <textarea id="inputdescr" class="form-control" ng-model="conf.description"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputdated" class="col-sm-2 form-control-label">Date de debut</label>
+                <div class="col-sm-3">
+                    <input type="date" id="inputdated" class="form-control" ng-model="conf.debut"/>
+                </div>
+            </div>
+            <!-- ajouter contrôle de la date si c'est dans le future -->
+            <div class="form-group row">
+                <label for="inputdatef" class="col-sm-2 form-control-label">Date de fin</label>
+                <div class="col-sm-3">
+                    <input type="date" id="inputdatef" class="form-control" ng-model="conf.fin"/>
+                </div>
+            </div>
+            <!-- ajouter contrôle de la date si c'est après celle de début -->
+            <div class="form-group row">
+                <label for="inputhor" class="col-sm-2 form-control-label">Informations horaires</label>
+                <div class="col-sm-3">
+                    <textarea id="inputhor" class="form-control" ng-model="conf.horaires"></textarea>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputville" class="col-sm-2 form-control-label">Ville</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputville" class="form-control" ng-model="conf.ville"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputpays" class="col-sm-2 form-control-label">Pays</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputpays" class="form-control" ng-model="conf.pays"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputorg" class="col-sm-2 form-control-label">Organisateurs</label>
+                <div class="col-sm-3">
+                    <input type="text" id="inputorg" class="form-control" ng-model="conf.organisateurs"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="inputmed" class="col-sm-2 form-control-label">Médecins
+                    invités<br/><br/>Participation</label>
+                <div class="col-sm-2">
+                    <select ng-model="selectedMed" id="inputmed" class="form-control"
+                            ng-options="x for x in listeMedecins"></select>
+                    <select ng-model="selectedRep" class="form-control" ng-options="x for x in reponsesConf"></select>
+                </div>
+                <div class="col-sm-1">
+                    <input type="button" ng-click="addMed(selectedMed, selectedRep)" value="Add"/>
+                </div>
+            </div>
+            <div>
+                Liste des médecins invités:
+            <span ng-repeat="meds1 in listeMedInv">
+                {{meds1}},
+            </span>
+                <div>{{msg}}</div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-1">
+                    <input type="submit" value="Submit"/>
+                </div>
+            </div>
+        </form>
+        {{message}}
+        {{bonjour}} {{test}}
+    </div>
+</div>

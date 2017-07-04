@@ -1,0 +1,181 @@
+<!--{{dbDetailMed}}
+{{listChecked}}
+{{deletedMedDet}}
+{{modifiMed}}
+
+
+ nbconf: {{nbConfTotal}}
+tabannees{{tabAnnees}}
+getannee{{getAnnee}}
+
+bjr:{{bonjour}}
+<h4>listeConf</h4>
+{{listeMConf}}
+
+{{listeAnnees}}
+{{tabAnnees}}
+{{tabCb}}
+-->
+
+<div>
+    <div class="marge" ng-show="idExiste">
+        <!--
+        tabconf:{{tabConf}}<br/><br/>
+        tabconf2:{{tabConf2}}<br/><br/>
+        tabconf3:{{tabConf3}}<br/><br/>
+        {{quelMed}}
+        {{bonjour}}
+        -->
+        <h1 ng-show="showMed" ng-repeat="infos in dbDetailMed">{{infos.prenom}} {{infos.nom}} <span
+                style="font-size:15px;"
+                ng-click="modifNom()" class="glyphicon glyphicon-pencil"></span></h1>
+        <div ng-hide="showMed">
+            <h1 ng-repeat="infos in dbDetailMed"><input style="width:250px;" type="text"
+                                                        ng-model="infos.prenom"/>
+                <input style="width:250px;" type="text" ng-model="infos.nom"/>
+                <center>
+                    <button class="btn btn-default btn-sm" ng-click="dbModifNomMed(infos.prenom, infos.nom)">Valider
+                    </button>
+                    <button class="btn btn-default btn-sm" ng-click="annuleNom()">Annuler</button>
+                </center>
+            </h1>
+            </h1>
+
+        </div>
+        <a href="#/medecins"><span style="font-size: 25px; color: black;"
+                                   class="glyphicon glyphicon-triangle-left"></span></a>
+        <br/><br/>
+
+        <table class="table" ng-repeat="infos in dbDetailMed">
+            <tr>
+                <td class="tdhead col-md-3">Spécialisation</td>
+
+                <td class="trtable col-md-7"><input type="text" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.specialisation" ng-model="spe"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Date de naissance</td>
+                <td class="trtable col-md-7" ng-show="bloque"><span ng-if="infos.naissance!=null">{{infos.naissance | date:'dd.MM.yyyy'}}</span>
+                </td>
+                <td class="trtable col-md-7" ng-hide="bloque"><input type="date" ng-model="infos.naissance"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Sexe</td>
+                <td class="trtable col-md-7" ng-show="bloque">{{infos.sexe}}</td>
+                <td class="trtable col-md-7" ng-hide="bloque">
+                    <div>
+                        Homme <input type="radio" name="radiohf" ng-model="sx" value="Homme" ng-disabled="bloque"
+                                     ng-checked="homme"/>
+                        Femme <input type="radio" name="radiohf" ng-model="sx" value="Femme" ng-disabled="bloque"
+                                     ng-checked="femme"/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Lieu de travail</td>
+                <td class="trtable col-md-7"><input type="text" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.lieu" ng-model="lieu"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Adresse e-mail</td>
+                <td class="trtable col-md-7"><input type="mail" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.mail" ng-model="mail"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Numéro de téléphone professionnel</td>
+                <td class="trtable col-md-7"><input type="text" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.numero" ng-model="num"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Nom du responsable</td>
+                <td class="trtable col-md-7"><input type="text" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.nomresp" ng-model="nresp"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Prénom du responsable</td>
+                <td class="trtable col-md-7"><input type="text" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.preresp" ng-model="presp"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">Adresse e-mail du responsable</td>
+                <td class="trtable col-md-7"><input type="mail" class="form-control" ng-disabled="bloque"
+                                                    ng-value="infos.mailresp" ng-model="mresp"/></td>
+            </tr>
+            <tr>
+                <td class="tdhead col-md-3">
+                    <button class="btn btn-default" ng-click="modifMed()">Modifier</button>
+                    <button class="btn btn-default" ng-click="dbDeleteMedDet(quelMed)">Supprimer</button>
+                </td>
+                <td class="trtable col-md-7">
+                    <button class="btn btn-default" ng-show="showValide"
+                            ng-click="dbModifMed(spe,infos.naissance,sx,lieu,mail,num,nresp,presp,mresp)">Valider
+                    </button>
+                    <button class="btn btn-default" ng-show="showValide" ng-click="annuleModif()">Annuler</button>
+                </td>
+            </tr>
+        </table>
+        <div class="alert alert-info" role="alert" ng-show="alertDet">{{msgDet}}</div>
+
+
+        <h2 style="margin-top:70px;">Liste des conférences</h2>
+        <table class="table">
+            <tr class="tdhead">
+                <td class="col-md-9">Conférence</td>
+                <td>Statut</td>
+                <td>Invitation</td>
+                <td>Réponse</td>
+                <td ng-show="showValide2">OK</td>
+            </tr>
+            <tr ng-repeat="x in ceMedConf" class="trtable">
+                <td>{{x.conference}}</td>
+                <td ng-hide="showValide2">{{x.statut}}</td>
+                <td ng-show="showValide2"><select ng-model="x.statut"
+                                                  ng-options="x for x in listeRep"></select></td>
+                <td ng-hide="showValide2"><span ng-if="x.invite!=null">{{x.invite | date:'dd.MM.yyyy'}}</span></td>
+                <td ng-show="showValide2"><input type="date" ng-model="x.invite"/></td>
+                <td ng-hide="showValide2"><span ng-if="x.repondu!=null">{{x.repondu | date:'dd.MM.yyyy'}}</span></td>
+                <td ng-show="showValide2"><input type="date" ng-model="x.repondu"/></td>
+                <td ng-show="showValide2">
+                    <button class="btn btn-default btn-sm glyphicon glyphicon-ok" ng-show="showValide2"
+                            ng-click="dbModifDate(x.conference,x.invite,x.repondu,x.statut)"></button>
+                </td>
+                <!-- select box à supprimer/modifier, mais avec id de la conf -->
+            </tr>
+            <tr class="trtable">
+                <td>
+                    <button class="btn btn-default" ng-click="modifDetail()" ng-hide="showValide2">Modifier</button>
+                    <button class="btn btn-default" ng-show="showValide2" ng-click="annuleDetail()">Annuler</button>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <h3>Statistiques</h3>
+        <br/>
+        <p style="color:darkgray;" ng-repeat="infos in dbDetailMed"><i>Nombre de conférences par année auxquelles
+            {{infos.prenom}} {{infos.nom}}
+            a participé:</i></p>
+        <br/>
+        <div ng-hide="ifStat">
+            <p>Ce médecin n'a participé a aucune conférence!</p>
+        </div>
+        <canvas id="mycanvas" width="500" height="400"></canvas>
+
+        <br/><br/><br/>
+        <p style="color:darkgray;" ng-repeat="infos in dbDetailMed"><i>Réponses de
+            {{infos.prenom}} {{infos.nom}}
+            aux conférences dont <span ng-if="infos.sexe=='Homme'">il</span><span
+                    ng-if="infos.sexe=='Femme'">elle</span><span ng-if="infos.sexe==''">il/elle</span> a répondu à
+            l'invitation:</i></p>
+        <br/>
+        <!-- ng-if s'il n'y a pas de conférence, ne pas afficher -->
+        <canvas id="acanvas" width="256" height="256"></canvas>
+    </div>
+</div>
+<div ng-hide="idExiste">
+    <div class="marge">
+        <h3>Désolé</h3>
+        <p>Aucun médecin ne correspond à cet ID.</p>
+    </div>
+</div>
